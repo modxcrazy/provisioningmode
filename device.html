@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeviceSpecs - Find Your Phone Image</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .logo i {
+            font-size: 42px;
+            margin-right: 15px;
+        }
+        
+        .logo h1 {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        .tagline {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .search-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        #search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        #search-input:focus {
+            border-color: #6a11cb;
+        }
+        
+        #search-btn {
+            background: #6a11cb;
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        #search-btn:hover {
+            background: #2575fc;
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .filter-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .filter-group select:focus {
+            border-color: #6a11cb;
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .device-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .device-image {
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+        
+        .device-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        
+        .device-info {
+            padding: 20px;
+        }
+        
+        .device-info h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .device-specs {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .device-specs li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .device-specs li:last-child {
+            border-bottom: none;
+        }
+        
+        .spec-name {
+            color: #777;
+            font-weight: 500;
+        }
+        
+        .spec-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            display: none;
+        }
+        
+        .no-results i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .no-results p {
+            font-size: 18px;
+            color: #777;
+        }
+        
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+            
+            #search-input {
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+            
+            #search-btn {
+                border-radius: 8px;
+                padding: 15px;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-mobile-alt"></i>
+                <h1>DeviceSpecs</h1>
+            </div>
+            <p class="tagline">Find images and specifications for any mobile device</p>
+        </header>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Enter device model (e.g., iPhone 13, Samsung Galaxy S21)">
+                <button id="search-btn">Search</button>
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="brand-filter">Brand</label>
+                    <select id="brand-filter">
+                        <option value="">All Brands</option>
+                        <option value="Apple">Apple</option>
+                        <option value="Samsung">Samsung</option>
+                        <option value="Google">Google</option>
+                        <option value="OnePlus">OnePlus</option>
+                        <option value="Xiaomi">Xiaomi</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="price-filter">Price Range</label>
+                    <select id="price-filter">
+                        <option value="">Any Price</option>
+                        <option value="budget">Budget (Under $300)</option>
+                        <option value="mid">Mid-Range ($300-$700)</option>
+                        <option value="premium">Premium ($700+)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="os-filter">Operating System</label>
+                    <select id="os-filter">
+                        <option value="">Any OS</option>
+                        <option value="iOS">iOS</option>
+                        <option value="Android">Android</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results" id="results-container">
+            <!-- Results will be displayed here -->
+        </div>
+        
+        <div class="no-results" id="no-results">
+            <i class="fas fa-search"></i>
+            <p>No devices found. Try a different search term.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 DeviceSpecs - Mobile Device Image Finder</p>
+    </footer>
+
+    <script>
+        // Sample device database
+        const devices = [
+            {
+                model: "iPhone 13 Pro",
+                brand: "Apple",
+                image: "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-13-pro-family-hero?wid=470&hei=556&fmt=png-alpha&.v=1631220221000",
+                price: "$999+",
+                os: "iOS",
+                specs: {
+                    display: "6.1-inch Super Retina XDR",
+                    chip: "A15 Bionic",
+                    storage: "128GB-1TB",
+                    camera: "Triple 12MP + LiDAR",
+                    battery: "Up to 22 hours video playback"
+                }
+            },
+            {
+                model: "Samsung Galaxy S21 Ultra",
+                brand: "Samsung",
+                image: "https://images.samsung.com/is/image/samsung/assets/in/smartphones/galaxy-s21-ultra-5g/images/galaxy-s21-ultra-5g_shared_default.jpg",
+                price: "$1199",
+                os: "Android",
+                specs: {
+                    display: "6.8-inch Dynamic AMOLED 2X",
+                    chip: "Exynos 2100 / Snapdragon 888",
+                    storage: "128GB-512GB",
+                    camera: "Quad 108MP + 10MP + 10MP + 12MP",
+                    battery: "5000mAh"
+                }
+            },
+            {
+                model: "Google Pixel 6 Pro",
+                brand: "Google",
+                image: "https://store.google.com/intl/en/googlephone/images/phones/pixel-6-pro/color_sorta_sunny.png?hl=en",
+                price: "$899",
+                os: "Android",
+                specs: {
+                    display: "6.7-inch LTPO OLED",
+                    chip: "Google Tensor",
+                    storage: "128GB-512GB",
+                    camera: "50MP wide + 48MP tele + 12MP ultra",
+                    battery: "5003mAh"
+                }
+            },
+            {
+                model: "OnePlus 9 Pro",
+                brand: "OnePlus",
+                image: "https://www.oneplus.com/content/dam/oasis/page/default/9-pro/black_1.png",
+                price: "$969",
+                os: "Android",
+                specs: {
+                    display: "6.7-inch Fluid AMOLED",
+                    chip: "Snapdragon 888",
+                    storage: "128GB-256GB",
+                    camera: "48MP + 50MP + 8MP + 2MP",
+                    battery: "4500mAh"
+                }
+            },
+            {
+                model: "Xiaomi Mi 11 Ultra",
+                brand: "Xiaomi",
+                image: "https://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58E875F0267/pms_1616383117.79214728.png",
+                price: "$1199",
+                os: "Android",
+                specs: {
+                    display: "6.81-inch AMOLED",
+                    chip: "Snapdragon 888",
+                    storage: "256GB-512GB",
+                    camera: "50MP + 48MP + 48MP",
+                    battery: "5000mAh"
+                }
+            },
+            {
+                model: "iPhone SE (2022)",
+                brand: "Apple",
+                image: "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-se-finish-select-202203?wid=470&hei=556&fmt=png-alpha&.v=1644981009790",
+                price: "$429",
+                os: "iOS",
+                specs: {
+                    display: "4.7-inch Retina HD",
+                    chip: "A15 Bionic",
+                    storage: "64GB-256GB",
+                    camera: "12MP Wide",
+                    battery: "Up to 15 hours video playback"
+                }
+            }
+        ];
+
+        // DOM elements
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const brandFilter = document.getElementById('brand-filter');
+        const priceFilter = document.getElementById('price-filter');
+        const osFilter = document.getElementById('os-filter');
+        const resultsContainer = document.getElementById('results-container');
+        const noResults = document.getElementById('no-results');
+
+        // Function to display devices
+        function displayDevices(devicesToShow) {
+            resultsContainer.innerHTML = '';
+            
+            if (devicesToShow.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+            
+            devicesToShow.forEach(device => {
+                const card = document.createElement('div');
+                card.className = 'device-card';
+                
+                const specsList = Object.entries(device.specs).map(([key, value]) => 
+                    `<li><span class="spec-name">${key.charAt(0).toUpperCase() + key.slice(1)}:</span> <span class="spec-value">${value}</span></li>`
+                ).join('');
+                
+                card.innerHTML = `
+                    <div class="device-image">
+                        <img src="${device.image}" alt="${device.model}">
+                    </div>
+                    <div class="device-info">
+                        <h3>${device.model}</h3>
+                        <p><strong>Brand:</strong> ${device.brand} | <strong>Price:</strong> ${device.price}</p>
+                        <ul class="device-specs">
+                            ${specsList}
+                        </ul>
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        // Function to filter devices
+        function filterDevices() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const brandValue = brandFilter.value;
+            const priceValue = priceFilter.value;
+            const osValue = osFilter.value;
+            
+            const filteredDevices = devices.filter(device => {
+                // Search term filter
+                if (searchTerm && !device.model.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                
+                // Brand filter
+                if (brandValue && device.brand !== brandValue) {
+                    return false;
+                }
+                
+                // OS filter
+                if (osValue && device.os !== osValue) {
+                    return false;
+                }
+                
+                // Price filter (simplified)
+                if (priceValue) {
+                    const priceNum = parseFloat(device.price.replace('$', '').replace('+', ''));
+                    if (priceValue === 'budget' && priceNum >= 300) return false;
+                    if (priceValue === 'mid' && (priceNum < 300 || priceNum > 700)) return false;
+                    if (priceValue === 'premium' && priceNum <= 700) return false;
+                }
+                
+                return true;
+            });
+            
+            displayDevices(filteredDevices);
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', filterDevices);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                filterDevices();
+            }
+        });
+        
+        brandFilter.addEventListener('change', filterDevices);
+        priceFilter.addEventListener('change', filterDevices);
+        osFilter.addEventListener('change', filterDevices);
+
+        // Initial display of all devices
+        displayDevices(devices);
+    </script>
+</body>
+</html>
