@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #6e8efb, #a777e3);
+            border-radius: 25px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .version {
+            background-color: #f2f2f2;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 30px;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(78, 84, 200, 0.4);
+        }
+        
+        .install-btn {
+            background: linear-gradient(to right, #11998e, #38ef7d);
+            color: white;
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(17, 153, 142, 0.4);
+        }
+        
+        .btn i {
+            font-size: 24px;
+        }
+        
+        .status {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+            color: #555;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress {
+            margin-top: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            transition: width 0.4s ease;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .btn {
+                padding: 14px;
+                font-size: 16px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        
+        <h1>Awesome App</h1>
+        <p>Download or install the latest version of our amazing application with just one click.</p>
+        
+        <div class="version">Version 2.1.5</div>
+        
+        <div class="buttons">
+            <button class="btn download-btn" id="downloadBtn">
+                <i class="fas fa-download"></i>
+                Download APK
+            </button>
+            
+            <button class="btn install-btn" id="installBtn">
+                <i class="fas fa-mobile-alt"></i>
+                Install APK
+            </button>
+            
+            <input type="file" id="fileInput" class="file-input" accept=".apk">
+        </div>
+        
+        <div class="file-info" id="fileInfo">No file selected for installation</div>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="status" id="status">
+            Ready to download or install...
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const installBtn = document.getElementById('installBtn');
+            const fileInput = document.getElementById('fileInput');
+            const status = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+            const fileInfo = document.getElementById('fileInfo');
+            
+            let selectedFile = null;
+            
+            // Simulate download from URL
+            downloadBtn.addEventListener('click', function() {
+                status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading from URL...';
+                progressBar.style.width = '0%';
+                
+                // Simulate progress for demo purposes
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            status.innerHTML = '<i class="fas fa-check-circle"></i> Download complete!';
+                            simulateFileDownload();
+                        }, 500);
+                    }
+                }, 100);
+            });
+            
+            // Handle install button click
+            installBtn.addEventListener('click', function() {
+                if (selectedFile) {
+                    status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Installing application...';
+                    
+                    // Simulate installation process
+                    setTimeout(() => {
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> Installation complete!';
+                        alert(`Installing ${selectedFile.name} from your device`);
+                    }, 1500);
+                } else {
+                    status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select an APK file first';
+                    fileInput.click();
+                }
+            });
+            
+            // Handle file selection for installation
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFile = e.target.files[0];
+                    fileInfo.textContent = `Selected: ${selectedFile.name}`;
+                    status.innerHTML = '<i class="fas fa-check-circle"></i> File selected. Click Install to proceed.';
+                }
+            });
+            
+            // Simulate file download (for demo purposes)
+            function simulateFileDownload() {
+                // In a real scenario, this would be the actual download code
+                const a = document.createElement('a');
+                a.href = 'https://example.com/path/to/your/file.apk'; // Replace with your actual APK URL
+                a.download = 'awesome_app_v2.1.5.apk';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
+    </script>
+</body>
+</html>
